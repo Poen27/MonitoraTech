@@ -4,6 +4,47 @@
   const email = typeof config.email === 'string' ? config.email.trim() : '';
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+
+  // PERSONALIZAÇÃO: os textos e cores são definidos no config.js.
+  // Edite apenas aquele arquivo para alterar a aparência da página.
+  const setPlainText = (selector, value) => {
+    if (typeof value !== 'string' || !value.trim()) return;
+    const el = document.querySelector(selector);
+    if (!el || el.textContent.trim() === value.trim()) return;
+    el.textContent = value;
+  };
+  const setHeading = (id, normal, highlighted) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const em = el.querySelector('em');
+    if (typeof normal === 'string' && normal.trim()) {
+      const firstText = Array.from(el.childNodes).find(n => n.nodeType === 3);
+      if (firstText) firstText.textContent = normal.trim() + ' ';
+      else el.insertBefore(document.createTextNode(normal.trim() + ' '), el.firstChild);
+    }
+    if (em && typeof highlighted === 'string' && highlighted.trim()) {
+      em.textContent = highlighted.trim();
+    }
+  };
+  const isHex = (color) => typeof color === 'string' && /^#[0-9a-fA-F]{6}$/.test(color);
+  if (isHex(config.corPrincipal)) document.documentElement.style.setProperty('--green', config.corPrincipal);
+  if (isHex(config.corFundo)) document.documentElement.style.setProperty('--navy', config.corFundo);
+  if (typeof config.nomeProjeto === 'string' && config.nomeProjeto.trim()) {
+    document.querySelectorAll('.brand > span').forEach(el => {
+      const firstText = Array.from(el.childNodes).find(n => n.nodeType === 3);
+      if (firstText) firstText.textContent = config.nomeProjeto.trim();
+      else el.insertBefore(document.createTextNode(config.nomeProjeto.trim()), el.firstChild);
+    });
+    document.title = config.nomeProjeto.trim() + ' — Monitoramento de TI';
+  }
+  if (typeof config.subtituloMarca === 'string' && config.subtituloMarca.trim()) {
+    document.querySelectorAll('.brand small').forEach(el => { el.textContent = config.subtituloMarca.trim(); });
+  }
+  setHeading('hero-title', config.tituloPrincipal, config.destaquePrincipal);
+  setPlainText('.hero-description', config.descricaoPrincipal);
+  setHeading('contact-title', config.tituloContato, config.destaqueContato);
+  setPlainText('.contact-copy > p', config.descricaoContato);
+
   const year = document.getElementById('current-year');
   if (year) year.textContent = String(new Date().getFullYear());
 
